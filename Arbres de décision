@@ -1,0 +1,58 @@
+from sklearn.datasets import load_iris
+import numpy as np
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV
+
+iris = load_iris()
+X, y = iris.data, iris.target
+print(X.shape, y.shape)
+
+mean = np.mean(X, axis=0)
+print("Moyenne des variables explicatives : ", mean)
+
+std = np.std(X, axis=0)
+print("Ecart-type des variables explicatives : ", std)
+
+class_count = np.bincount(y)
+print("Nombre d'exemples de chaque classe : ", class_count)
+
+tree = DecisionTreeClassifier()
+
+clf = tree.fit(X, y)
+
+tree = DecisionTreeClassifier(max_depth=4, min_samples_leaf=2)
+
+clf2 = tree.fit(X, y)
+
+print("La classe prédite est :", iris.target_names[clf.predict([[4.9,3.6,1.4,0.1]])][0])
+
+print("La classe prédite est :", iris.target_names[clf2.predict([[4.9,3.6,1.4,0.1]])][0])
+
+print (clf.predict([[4.9,3.6,1.4,0.1]]))
+
+print (clf2.predict([[4.9,3.6,1.4,0.1]]))
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.95, random_state=40)
+
+tree = DecisionTreeClassifier()
+
+clf = tree.fit(X_train, y_train)
+
+print("La classe prédite est :", iris.target_names[clf.predict([[4,3,1,1]])][0])
+
+y_pred = clf.predict(X_test)
+
+error_rate = 1 - np.mean(y_pred == y_test)
+
+print("Taux d'éléments mal classifiés sur l'ensemble de test :", error_rate)
+
+tree = DecisionTreeClassifier()
+
+param_grid = {'max_depth': [2, 4, 6, 8], 'min_samples_leaf': [1, 2, 4, 8]}
+
+grid_search = GridSearchCV(tree, param_grid, cv=5)
+
+grid_search.fit(X, y)
+
+print("Meilleurs paramètres trouvés : ", grid_search.best_params_)
